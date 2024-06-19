@@ -41,6 +41,8 @@ export class EditVideoComponent implements OnInit, OnDestroy {
     private location: Location) {
 
   }
+
+  
   ngOnInit() {
     this.initFormGroup();
     const id = this.route.snapshot.paramMap.get('id');

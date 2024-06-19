@@ -41,6 +41,8 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
       this.videoId = Number(id);
       this.unsubscribe = this.videoService.getVideobyId(this.videoId).subscribe((video) => {
         this.video = video;
+        console.log(this.video);
+
         this.checkVideoLikes();
         this.currentVideoSrc = this.video.video_file;
         this.videoQualities = video.qualities || [];
@@ -71,7 +73,8 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
   toggleLikeVideo(videoId: number) {
     this.videoService.toggleLike(videoId).subscribe({
-      next: (response) => {
+      next: (response: any) => {
+        this.video!.likes = response.likes;
         this.getSelectedVideo(videoId);
         this.videoService.notifyLikeUpdate(videoId);
       },
@@ -96,11 +99,11 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
 
   checkVideoLikes() {
+    console.log(this.video, this.video?.likes, this.currentUser, this.currentUser.id);
+
     if (this.video && this.video.likes && this.currentUser && this.currentUser.id !== undefined) {
       this.videoLiked = this.video.likes.includes(this.currentUser.id);
-    } else {
-      console.error("currentUser oder likes sind undefined");
-    }
+    } else { }
   }
 
 
@@ -122,7 +125,7 @@ export class VideoDetailComponent implements OnInit, OnDestroy {
 
 
   pollForVideoQualities(videoId: number) {
-    const pollingInterval = 1000;
+    const pollingInterval = 10000;
     const stopPollingAfter = 60000;
     const stopPolling$ = timer(stopPollingAfter);
     interval(pollingInterval).pipe(

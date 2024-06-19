@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Video } from '../models/video.class';
-import { BehaviorSubject, Observable, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, take, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
@@ -69,22 +69,12 @@ export class VideoService {
     return this.http.put(url, videoData);
   }
 
-  
+
   getVideobyId(id: number) {
     const url = environment.baseUrl + `/videos/${id}`;
     return this.http.get<Video>(url);
   }
 
-
-  toggleLike(videoId: number): Observable<any> {
-    const url = `${environment.baseUrl}/toggle_like/${videoId}`;
-    return this.http.post(url, {}).pipe(
-      tap(() => {
-        this.loadInitialVideoData(); 
-      })
-    );
-  }
-  
 
   notifyLikeUpdate(videoId: number) {
     this.likeUpdate.next(videoId);
@@ -109,7 +99,7 @@ export class VideoService {
 
 
   getRecentVideos() {
-    const url = environment.baseUrl + `/videos/recentVideos/`;    
+    const url = environment.baseUrl + `/videos/recentVideos/`;
     return this.http.get<Video[]>(url);
   }
 
@@ -138,12 +128,12 @@ export class VideoService {
     const url = environment.baseUrl + `/videos/mostSeen_videos/`;
     this.http.get<Video[]>(url).subscribe(
       mostSeen => {
+        console.log('Most seen videos loaded', mostSeen);
         this.mostSeenVideosSubject.next(mostSeen);
       },
       error => {
         console.error('Fehler beim Laden der MostSeenVideos:', error)
       }
-
     );
   }
 
@@ -152,7 +142,7 @@ export class VideoService {
     const url = environment.baseUrl + `/videos-search/?search=${searchterm}`;
     this.http.get<Video[]>(url).subscribe(
       searchResults => {
-        this.searchResults.next(searchResults);    
+        this.searchResults.next(searchResults);
       },
       error => {
         console.error('Fehler bei der Suche:', error);
@@ -161,14 +151,36 @@ export class VideoService {
   }
 
 
-  loadInitialVideoData() {
-    this.loadVideosForType('recentVideos', this.recentVideosSubject);
+  toggleLike(videoId: number): Observable<any> {
+    const url = `${environment.baseUrl}/videos/${videoId}/toggle_like/`;
+    return this.http.post(url, {}).pipe(
+      tap((response: any) => {
+        this.updateLikeList(videoId, response.likes);
+      })
+    );
   }
 
 
-  loadVideosForType(type: string, subject: BehaviorSubject<Video[]>) {   
+  updateLikeList(videoId: number, likes: number[]) {
+    this.updateSubject(this.mostLikedVideosSubject, videoId, likes);
+    this.updateSubject(this.mostSeenVideosSubject, videoId, likes);
+    this.updateSubject(this.recentVideosSubject, videoId, likes);
+  }
+
+
+  updateSubject(subject: BehaviorSubject<Video[]>, videoId: number, likes: number[]) {
+    const videos = subject.getValue();
+    const video = videos.find(v => v.id === videoId);
+    if (video) {
+      video.likes = likes;
+      subject.next([...videos]);
+    }
+  }
+
+
+  loadVideosForType(type: string, subject: BehaviorSubject<Video[]>) {
     const url = `${environment.baseUrl}/videos/${type}/`;
     this.http.get<Video[]>(url).subscribe(videos => subject.next(videos));
   }
-  
+
 }

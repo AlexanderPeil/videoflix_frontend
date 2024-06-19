@@ -20,22 +20,23 @@ export class PopularComponent implements OnInit, OnDestroy {
 
   private displayedVideosSubject = new BehaviorSubject<Video[]>([]);
   public displayedVideos$ = this.displayedVideosSubject.asObservable();
-  
-  private subscription: Subscription = new Subscription();
-  likeSubscription!: Subscription;
 
-  constructor(public videoService: VideoService) {
+  private subscription: Subscription = new Subscription();
+
+  constructor(public videoService: VideoService) { }
+
+
+  ngOnInit(): void {
+    this.loadVideos();
+  }
+
+
+  loadVideos() {
     this.getTodayVideos();
     this.getYesterdayVideos();
     this.videoService.getMostLikedVideos();
     this.videoService.getMostSeenVideos();
-    this.videoService.loadInitialVideoData();
-    this.getRecentVideos();
-  }
-
-
-  ngOnInit(): void {
-
+    this.getRecentVideos();  
   }
 
 
@@ -50,6 +51,7 @@ export class PopularComponent implements OnInit, OnDestroy {
   getRecentVideos() {
     this.videoService.getRecentVideos().subscribe(videos => {
       this.recentVideosSubject.next(videos);
+      console.log(videos);
     })
   }
 
@@ -63,7 +65,7 @@ export class PopularComponent implements OnInit, OnDestroy {
 
   scrollLeft() {
     const container = document.querySelector('.videoRow');
-    container?.scrollBy({ left: -200, behavior: 'smooth' }); 
+    container?.scrollBy({ left: -200, behavior: 'smooth' });
   }
 
 
@@ -82,21 +84,7 @@ export class PopularComponent implements OnInit, OnDestroy {
   }
 
 
-  handleVideoLiked(videoId: number) {
-    this.videoService.toggleLike(videoId).subscribe({
-      next: () => {
-      },
-      error: (err) => {
-        console.error('Fehler beim Liken des Videos', err);
-      }
-    });
-  }
-  
-  
-
-
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-    this.likeSubscription?.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 }

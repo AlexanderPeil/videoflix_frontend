@@ -16,7 +16,8 @@ import { Router } from '@angular/router';
 })
 export class OverviewComponent implements OnInit, OnDestroy {
   private users: User[] = [];
-  private subscription?: Subscription;
+  private userSubscription?: Subscription;
+  private videoSubscription?: Subscription;
   selectedVideo: any = null;
   videosByCategory: { [category: string]: Video[] } = {};
   private videosByCategorySubject = new BehaviorSubject<{ [category: string]: Video[] }>({});
@@ -26,24 +27,25 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private videoService: VideoService, 
-    private userService: UserService, 
+    private videoService: VideoService,
+    private userService: UserService,
     public router: Router) { }
 
   ngOnInit() {
     this.videoService.getVideos();
     this.userService.getUserData();
-    this.subscription = this.userService.users$.subscribe(users => {
+    this.userSubscription = this.userService.users$.subscribe(users => {
       this.users = users;
     });
-    this.videoService.videos$.subscribe(videos => {
-      this.groupVideosByCategory(videos);            
+    this.videoSubscription = this.videoService.videos$.subscribe(videos => {
+      this.groupVideosByCategory(videos);
     });
   }
 
 
   ngOnDestroy() {
-    this.subscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();
+    this.videoSubscription?.unsubscribe();
     const modalElement = document.getElementById('overviewVideoModal');
   }
 
@@ -58,5 +60,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
     this.videosByCategorySubject.next(categoryGroups);
   }
+
 
 }

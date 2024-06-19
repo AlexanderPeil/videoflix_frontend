@@ -1,34 +1,31 @@
-
 <div class="videoListing">
 
-    <div *ngFor="let video of videos" >
-       
-        <div class="itemBox" >
+    <div *ngFor="let video of videos">
+
+        <div class="itemBox">
             <div class="pic-box">
-               
+
                 <div class="overlay" (click)="viewVideoDetail(video.id)">
-                  
+
                     <div class="playIcon">Play</div>
                 </div>
-               
-                <video class="video" [poster]="video.thumbnail" >
-                   
+
+                <video class="video" [poster]="video.thumbnail">
                     <source [src]="video.video_file" type="video/mp4">
                     Ihr Browser unterstützt das Video-Tag nicht.
-                    
                 </video>
-           
+
             </div>
-                <div class="text-besides" *ngIf="video">
-                    <div class="overview-title">{{video.title}}</div>
-                    <div class="overview-category">{{video.category}}</div>
-                    <div class="overview-likes">
-                        <span><img src="../../../assets/img/icons8-herz-48.png" alt="">{{video?.likes?.length}}</span>
-                        <span class="space-left"><img src="../../../assets/img/auge.png" alt="">{{video?.view_count}}</span>
-                    </div>
-                   
+            <div class="text-besides" *ngIf="video">
+                <div class="overview-title">{{video.title}}</div>
+                <div class="overview-category">{{video.category}}</div>
+                <div class="overview-likes">
+                    <span><img src="../../../assets/img/icons8-herz-48.png" alt="">{{video?.likes?.length}}</span>
+                    <span class="space-left"><img src="../../../assets/img/auge.png" alt="">{{video?.view_count}}</span>
                 </div>
-            
+
+            </div>
+
         </div>
     </div>
 </div>

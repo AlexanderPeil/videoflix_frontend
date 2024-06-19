@@ -62,6 +62,7 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
+
   onUpload() {
     if (this.videoForm.valid && this.selectedFile) {
       const formData = this.createFormData();
@@ -73,6 +74,7 @@ export class MyvideosComponent implements OnInit {
       });
     }
   }
+
 
   createFormData(): FormData {
     const formData = new FormData();
@@ -90,10 +92,12 @@ export class MyvideosComponent implements OnInit {
     return formData;
   }
 
+
   toggleUploadState(isUploading: boolean): void {
     this.activateUploadbtn = !isUploading;
     this.loading = isUploading;
   }
+
 
   handleUploadSuccess(): void {
     this.resetForm();
@@ -102,10 +106,12 @@ export class MyvideosComponent implements OnInit {
     this.videoService.getVideos();
   }
 
+
   handleUploadError(error: any): void {
     console.error('Fehler beim Hochladen des Videos', error);
     this.toggleUploadState(false);
   }
+
 
   resetForm(): void {
     this.videoForm.reset();
@@ -117,17 +123,21 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
+
   deleteVideo(videoId: number) {
     this.videoService.deleteVideo(videoId);
   }
+
 
   deleteSelectedVideo() {
     this.selectedVideo = null;
   }
 
+
   onSelectVideo(video: Video): void {
     this.selectedVideo = video;
   }
+
 
   async showVideoData(videoData: Video) {
     try {
@@ -142,6 +152,7 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
+
   initFormGroup() {
     this.editVideoForm = this.formBuilder.group({
       title: ['', [Validators.required]],
@@ -150,6 +161,7 @@ export class MyvideosComponent implements OnInit {
       film_rating: ['', [Validators.required]],
     });
   }
+
 
   saveChanges(video: Video) {
     if (this.editVideoForm.valid) {
@@ -165,6 +177,7 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
+
   selectRating(rating: number) {
     const filmRatingControl = this.videoForm.get('film_rating');
     if (filmRatingControl) {
@@ -173,6 +186,7 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
+
   selectCategory(category: string) {
     const categoryControl = this.videoForm.get('category');
     if (categoryControl) {
@@ -180,6 +194,7 @@ export class MyvideosComponent implements OnInit {
       this.currentCategory = category;
     }
   }
+  
 
   showForm() {
     this.showUploadMessage = false;
