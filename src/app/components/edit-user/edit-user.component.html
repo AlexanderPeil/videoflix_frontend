@@ -43,7 +43,6 @@
     </div>
     <div class="section-devider"></div>
     <div class="content-box">
-        <!-- <div class="editUserBottomContainer"> -->
 
         <span class="infoText">
             Möchtest du deinen Account löschen?
@@ -64,6 +63,15 @@
                     <div class="modal-body">
                         Möchtest du wirklich deinen Account unwiderruflich löschen?
                     </div>
+
+                    <div *ngIf="loading" class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+
+                    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                        {{ errorMessage }}
+                    </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
@@ -72,7 +80,6 @@
                 </div>
             </div>
         </div>
-        <!-- </div> -->
     </div>
     <div class="section-devider"></div>
 </div>

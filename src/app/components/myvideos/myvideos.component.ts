@@ -22,7 +22,7 @@ export class MyvideosComponent implements OnInit {
   showUploadMessage: boolean = false;
   uploadMessage: string = '';
   activateUploadbtn: boolean = true;
-  showLoadingSpinner: boolean = false;
+  loading: boolean = false;
   @ViewChild('fileInput') fileInputVariable: ElementRef | undefined;
 
   videoForm = this.formBuilder.group({
@@ -92,7 +92,7 @@ export class MyvideosComponent implements OnInit {
 
   toggleUploadState(isUploading: boolean): void {
     this.activateUploadbtn = !isUploading;
-    this.showLoadingSpinner = isUploading;
+    this.loading = isUploading;
   }
 
   handleUploadSuccess(): void {
@@ -184,6 +184,6 @@ export class MyvideosComponent implements OnInit {
   showForm() {
     this.showUploadMessage = false;
     this.activateUploadbtn = true;
-    this.showLoadingSpinner = false;
+    this.loading = false;
   }
 }

@@ -16,6 +16,8 @@ export class EditUserComponent implements OnInit {
   editUserForm!: FormGroup;
   submitted = false;
   currentUsername!: string;
+  loading: boolean = false;
+  errorMessage: string | null = null;
 
 
   constructor(
@@ -62,26 +64,31 @@ export class EditUserComponent implements OnInit {
     try {
       const formData: SignupData = this.editUserForm.value;
       await this.authService.updateUserProfile(formData);
-      this.location.back(); 
+      this.location.back();
     } catch (err) {
       console.error('Could not save user profile chanegs.', err);
     }
   }
-  
+
 
   async deleteAccount() {
+    this.loading = true;
+    this.errorMessage = null;
     try {
       await this.authService.deleteUserAccount();
       this.router.navigateByUrl('/login');
       this.messageService.changeMessage('Account successfully deleted');
     } catch (err) {
-      console.error('Could not delete user-account', err);
+      this.errorMessage = 'Could not delete user account. Please try again later.';
+      console.error('Could not delete user account', err);
+    } finally {
+      this.loading = false;
     }
   }
 
-  
-  goBack(): void {      
-    this.location.back(); 
+
+  goBack(): void {
+    this.location.back();
   }
 
 }

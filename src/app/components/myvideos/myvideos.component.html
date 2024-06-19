@@ -59,7 +59,7 @@
       
         <div class="modal-footer addVideoBtn">
           <button [disabled]="!videoForm.valid || !activateUploadbtn" type="submit" class="btn btn-danger">Video hinzufügen</button>
-          <div *ngIf="showLoadingSpinner" class="spinner-border" role="status">
+          <div *ngIf="loading" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
