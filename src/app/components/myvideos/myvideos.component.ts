@@ -4,7 +4,6 @@ import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { Video } from 'src/app/models/video.class';
 
-declare var bootstrap: any;
 @Component({
   selector: 'app-myvideos',
   templateUrl: './myvideos.component.html',
@@ -22,6 +21,8 @@ export class MyvideosComponent implements OnInit {
   currentCategory: string = 'allgemein';
   showUploadMessage: boolean = false;
   uploadMessage: string = '';
+  activateUploadbtn: boolean = true;
+  showLoadingSpinner: boolean = false;
   @ViewChild('fileInput') fileInputVariable: ElementRef | undefined;
 
   videoForm = this.formBuilder.group({
@@ -32,27 +33,12 @@ export class MyvideosComponent implements OnInit {
     film_rating: [0, Validators.required]
   });
 
-
-  onFileSelected(event: Event) {
-    const element = event.currentTarget as HTMLInputElement;
-    let file: File | null = element.files ? element.files[0] : null;
-    if (file) {
-      this.videoForm.patchValue({ video_file: file as any | null });
-      this.videoForm.get('video_file')?.updateValueAndValidity();
-      this.selectedFile = file; 
-    }
-  }
-
-  constructor(private formBuilder: FormBuilder, public videoService: VideoService, private authService: AuthService) {
-
-  }
+  constructor(private formBuilder: FormBuilder, public videoService: VideoService, private authService: AuthService) { }
 
   ngOnInit() {
     this.videoService.getVideos();
     this.initFormGroup();
     this.loadMyVideos();
-
-
   }
 
 
@@ -63,55 +49,85 @@ export class MyvideosComponent implements OnInit {
     this.videoService.videos$.subscribe(videos => {
       this.myVideos = videos.filter(video => video.created_from === userId);
     });
+  }
 
+
+  onFileSelected(event: Event) {
+    const element = event.currentTarget as HTMLInputElement;
+    let file: File | null = element.files ? element.files[0] : null;
+    if (file) {
+      this.videoForm.patchValue({ video_file: file as any | null });
+      this.videoForm.get('video_file')?.updateValueAndValidity();
+      this.selectedFile = file;
+    }
   }
 
   onUpload() {
     if (this.videoForm.valid && this.selectedFile) {
-      const formData = new FormData();
-      formData.append('title', this.videoForm.value.title ?? '')
-      formData.append('description', this.videoForm.value.description ?? '')
-      formData.append('video_file', this.selectedFile, this.selectedFile.name);
-      formData.append('category', this.videoForm.value.category ?? 'allgemein');
-      formData.append('myFile', this.selectedFile, this.selectedFile.name);
-      formData.append('film_rating', this.videoForm.value.film_rating?.toString() ?? '0');
+      const formData = this.createFormData();
+      this.toggleUploadState(true);
 
       this.videoService.postVideo(formData).subscribe({
-        next: (response) => {
-          this.videoForm.reset();
-          this.selectedFile = null;
-          this.curentfilmRating = 0;
-          this.currentCategory = 'allgemein';
-          this.showUploadMessage = true;
-          if (this.fileInputVariable && this.fileInputVariable.nativeElement) {
-            this.fileInputVariable.nativeElement.value = "";
-          }
-          this.uploadMessage = 'Vielen Dank für den Upload eines neuen Videos. Wir schalten es nach Überprüfung frei. Dies kann bis zu 24 Stunden dauern.';
-          this.videoService.getVideos();
-        },
-        error: (error) => {
-          console.log('Fehler beim Hochladen des Videos', error);
-        }
-      })
-
+        next: () => this.handleUploadSuccess(),
+        error: (error) => this.handleUploadError(error)
+      });
     }
   }
 
+  createFormData(): FormData {
+    const formData = new FormData();
+    formData.append('title', this.videoForm.value.title ?? '');
+    formData.append('description', this.videoForm.value.description ?? '');
+
+    if (this.selectedFile) {
+      formData.append('video_file', this.selectedFile, this.selectedFile.name);
+      formData.append('myFile', this.selectedFile, this.selectedFile.name);
+    }
+
+    formData.append('category', this.videoForm.value.category ?? 'allgemein');
+    formData.append('film_rating', this.videoForm.value.film_rating?.toString() ?? '0');
+
+    return formData;
+  }
+
+  toggleUploadState(isUploading: boolean): void {
+    this.activateUploadbtn = !isUploading;
+    this.showLoadingSpinner = isUploading;
+  }
+
+  handleUploadSuccess(): void {
+    this.resetForm();
+    this.showUploadMessage = true;
+    this.uploadMessage = 'Vielen Dank für den Upload eines neuen Videos. Wir schalten es nach Überprüfung frei. Dies kann bis zu 24 Stunden dauern.';
+    this.videoService.getVideos();
+  }
+
+  handleUploadError(error: any): void {
+    console.error('Fehler beim Hochladen des Videos', error);
+    this.toggleUploadState(false);
+  }
+
+  resetForm(): void {
+    this.videoForm.reset();
+    this.selectedFile = null;
+    this.curentfilmRating = 0;
+    this.currentCategory = 'allgemein';
+    if (this.fileInputVariable && this.fileInputVariable.nativeElement) {
+      this.fileInputVariable.nativeElement.value = '';
+    }
+  }
 
   deleteVideo(videoId: number) {
     this.videoService.deleteVideo(videoId);
   }
 
-
   deleteSelectedVideo() {
     this.selectedVideo = null;
   }
 
-
   onSelectVideo(video: Video): void {
     this.selectedVideo = video;
   }
-
 
   async showVideoData(videoData: Video) {
     try {
@@ -126,16 +142,14 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
-
   initFormGroup() {
     this.editVideoForm = this.formBuilder.group({
       title: ['', [Validators.required]],
       description: ['', [Validators.required]],
       category: ['', [Validators.required]],
       film_rating: ['', [Validators.required]],
-    })
+    });
   }
-
 
   saveChanges(video: Video) {
     if (this.editVideoForm.valid) {
@@ -146,11 +160,10 @@ export class MyvideosComponent implements OnInit {
       formData.append('film_rating', this.editVideoForm.get('film_rating')?.value);
       const videoId = video.id;
       if (videoId !== undefined) {
-        this.videoService.updateVideo(formData, videoId)
+        this.videoService.updateVideo(formData, videoId);
       }
     }
   }
-
 
   selectRating(rating: number) {
     const filmRatingControl = this.videoForm.get('film_rating');
@@ -160,7 +173,6 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
-
   selectCategory(category: string) {
     const categoryControl = this.videoForm.get('category');
     if (categoryControl) {
@@ -169,8 +181,9 @@ export class MyvideosComponent implements OnInit {
     }
   }
 
-
   showForm() {
     this.showUploadMessage = false;
+    this.activateUploadbtn = true;
+    this.showLoadingSpinner = false;
   }
 }

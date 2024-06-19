@@ -4,7 +4,8 @@
 
         <span class="headline"> <img src="../../../assets/img/logovideoflix.png" alt="" width="250px"></span>
         <span class="warning" [class.d-none]="!isEmailPasswordInvalid">Username oder Passwort falsch!</span>
-        <span class="warning" [class.d-none]="!isEmailPasswordInvalid">Ein Fehler ist aufgetreten. Versuche es bitte noch einmal.</span>
+        <span class="warning" [class.d-none]="!isEmailPasswordInvalid">Ein Fehler ist aufgetreten. Versuche es bitte
+            noch einmal.</span>
         <span class="warning" *ngIf="message">{{message}}</span>
         <span *ngIf="notVerifiedMessage" class="warning">Bitte bestätige erst deine Email.</span>
         <form class="formgroup" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -27,9 +28,6 @@
         <div class="signUpBoxBottomContent">
             <div class="forgotPw" [routerLink]="['/forgot-password']">Passwort vergessen?</div>
         </div>
-
-        <!-- <div class="devide"></div>
-        <div class="redsection">Gastzugang</div>-->
     </div>
 </div>
 

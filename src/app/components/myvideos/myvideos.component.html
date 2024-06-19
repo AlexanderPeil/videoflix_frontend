@@ -6,9 +6,8 @@
       <div class="headline"> <img src="../../../assets/img/logovideoflix.png" alt="" width="250px"></div>
       <div *ngIf="!showUploadMessage">NEUES VIDEO HOCHLADEN</div>
 
+      <!-- Video upload form -->
       <form class="formgroup" [formGroup]="videoForm" (ngSubmit)="onUpload()" *ngIf="!showUploadMessage">
-
-
         <div class="input-item">
           <label for="username">Titel:</label>
           <input class="form-control" type="text" formControlName="title" placeholder="Titel">
@@ -17,7 +16,7 @@
           <label for="username">Beschreibung:</label>
           <input class="form-control" type="text" formControlName="description" placeholder="Beschreibung">
         </div>
-
+      
         <div class="dropdownMenu mb-4 mt-1">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
             data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,17 +32,14 @@
             <span class="currentSelection"> {{curentfilmRating}}</span>
           </div>
         </div>
-
-
+      
         <div class="dropdownMenu mb-4">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="categoryDropdownButton"
             data-bs-toggle="dropdown" aria-expanded="false">
             Kategorie wählen
           </button>
-          <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton"
-            style="max-height: 200px; overflow-y: auto;">
-            <li><button class="dropdown-item" type="button" (click)="selectCategory('allgemein')">Allgemein</button>
-            </li>
+          <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton" style="max-height: 200px; overflow-y: auto;">
+            <li><button class="dropdown-item" type="button" (click)="selectCategory('allgemein')">Allgemein</button></li>
             <li><button class="dropdown-item" type="button" (click)="selectCategory('kids')">Kids</button></li>
             <li><button class="dropdown-item" type="button" (click)="selectCategory('noidea')">No idea</button></li>
             <li><button class="dropdown-item" type="button" (click)="selectCategory('funny')">Funny</button></li>
@@ -58,27 +54,27 @@
             <span class="currentSelection"> {{currentCategory}}</span>
           </div>
         </div>
-
+      
         <input type="file" (change)="onFileSelected($event)" #fileInput>
-
+      
         <div class="modal-footer addVideoBtn">
-          <button [disabled]="!videoForm.valid" type="submit" class="btn btn-danger">Video
-            hinzufügen</button>
-
+          <button [disabled]="!videoForm.valid || !activateUploadbtn" type="submit" class="btn btn-danger">Video hinzufügen</button>
+          <div *ngIf="showLoadingSpinner" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </div>
       </form>
+      
       <div *ngIf="showUploadMessage" class="upload-message">
         {{ uploadMessage }}
         <button class="btn btn-danger" (click)="showForm()">Ok</button>
       </div>
-    </div>
-  </div>
-</div>
+      
 
 <div>
   <div class="rowHead">
     <h2><strong>Meine</strong> veröffentlichten Videos</h2>
   </div>
-  
+
   <app-my-catalog-list [videos]="myVideos"></app-my-catalog-list>
 </div>
