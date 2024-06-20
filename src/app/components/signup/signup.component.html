@@ -1,12 +1,7 @@
 <button class="btn btn-danger fixedButton" [routerLink]="['/start']">zurück</button>
 <div class="startbox">
-    <!-- <div class="title titleadd">Videoflix</div>
-    <div class="title">
-        Streamen, Teilen, Spaß haben
-    </div> -->
 
     <div class="signUpBox">
-
         <span class="headline"><img src="../../../assets/img/logovideoflix.png" alt="" width="250px"></span>
 
         <!-- Sign up form -->
@@ -42,15 +37,16 @@
                 <input class="form-control" type="password" formControlName="confirmPassword"
                     placeholder="Passwort wiederholen">
                 <span class="warning"
-                    *ngIf="signUpForm.errors?.['notSame'] && signUpForm.get('confirmPassword')?.touched">Passwords do
-                    not match.</span>
+                    *ngIf="signUpForm.errors?.['notSame'] && signUpForm.get('confirmPassword')?.touched">Passwörter
+                    stimmen nicht überein!</span>
             </div>
 
             <button class="btn btn-danger signUptBtn" type="submit"
                 [disabled]="!signUpForm.valid || isButtonDisabled">Konto anlegen</button>
-            <span *ngIf="signedUpInfo" class="success signupInfoText">Signed up succesfully. We sent you a verification
-                email.</span>
-            <!-- <span *ngIf="userAlreadyExists" class="warning signupInfoText">This user already exists.</span> -->
+            <span *ngIf="signedUpInfo" class="success signupInfoText">
+                Registrierung erfolgreich! Wir haben dir eine Bestätigungs-E-Mail gesendet. Dies kann einige Minuten
+                dauern.
+            </span>
             <span *ngIf="errorMessage" class="warning signupInfoText">{{ errorMessage }}</span>
 
         </form>

@@ -51,9 +51,6 @@ export class ForgotPasswordComponent {
       this.isButtonDisabled = true;
       await this.authService.forgotPassword(email);
       this.sendMailInfo = true;
-      setTimeout(() => {
-        this.router.navigateByUrl('/login');
-      }, 3000);
     } catch (err) {
       console.error('Could not send mail.', err);
       this.handlySignUpError();

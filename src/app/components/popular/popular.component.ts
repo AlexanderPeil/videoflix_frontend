@@ -51,7 +51,6 @@ export class PopularComponent implements OnInit, OnDestroy {
   getRecentVideos() {
     this.videoService.getRecentVideos().subscribe(videos => {
       this.recentVideosSubject.next(videos);
-      console.log(videos);
     })
   }
 

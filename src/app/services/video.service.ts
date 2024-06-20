@@ -128,7 +128,6 @@ export class VideoService {
     const url = environment.baseUrl + `/videos/mostSeen_videos/`;
     this.http.get<Video[]>(url).subscribe(
       mostSeen => {
-        console.log('Most seen videos loaded', mostSeen);
         this.mostSeenVideosSubject.next(mostSeen);
       },
       error => {

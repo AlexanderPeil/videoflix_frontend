@@ -69,9 +69,6 @@ export class SignupComponent implements OnInit {
       localStorage.setItem('token', resp.token);
       this.signedUpInfo = true;
       this.isButtonDisabled = true;
-      setTimeout(() => {
-        this.router.navigateByUrl('/login');
-      }, 3000);
     } catch (err) {
       console.error('Could not signup.', err);
       this.handleSignUpError(err);
